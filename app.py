@@ -16,8 +16,7 @@ if "chat_history" not in st.session_state:
 # Modelin başladılması
 model = genai.GenerativeModel(
     model_name='gemini-2.0-flash',
-system_instruction="Sənin adın 'Perfect AI'-dir. İstifadəçi ilə mehriban və köməkçi tonda danış.İstifadəçi hansı dildə danışsa o dildə cavab ver.Əgər istifadəçi səninlə ilk dəfə salamlaşırsa, sən də salam ver. Əks halda, birbaşa sualları cavablandır.
-)
+system_instruction="Sənin adın 'Perfect AI'-dir. İstifadəçi ilə mehriban və köməkçi tonda danış.İstifadəçi hansı dildə danışsa o dildə cavab ver.Əgər istifadəçi səninlə ilk dəfə salamlaşırsa, sən də salam ver. Əks halda, birbaşa sualları cavablandır)
 
 # 3. Söhbət Tarixçəsini Göstər
 for message in st.session_state.chat_history:
@@ -54,4 +53,5 @@ if prompt or uploaded_file:
         except Exception as e:
 
             st.error(f"Xəta: {e}")
+
 
