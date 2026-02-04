@@ -3,7 +3,7 @@ import google.generativeai as genai
 from PIL import Image
 
 # 1. API Tənzimləməsi
-genai.configure(api_key="AIzaSyAbkgdf-7JhEJFC-DF0g10WpJ57zo5DpJU")
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
 # 2. Səhifə Tənzimləmələri
 st.set_page_config(page_title="Perfect AI", page_icon="🌟")
@@ -54,4 +54,5 @@ if prompt or uploaded_file:
             st.session_state.chat_history.append({"role": "assistant", "content": response.text})
             
         except Exception as e:
+
             st.error(f"Xəta: {e}")
