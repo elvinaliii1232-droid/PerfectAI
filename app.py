@@ -2,56 +2,36 @@ import streamlit as st
 import google.generativeai as genai
 from PIL import Image
 
-# 1. API Tənzimləməsi
+# 1. API Tənzimləməsi (Secrets-dən oxuyur)
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
 # 2. Səhifə Tənzimləmələri
 st.set_page_config(page_title="Perfect AI", page_icon="🌟")
 st.title("🌟 Perfect AI")
 
-# Yaddaş (History) funksiyası üçün session_state yaradırıq
+# Yaddaş (History) funksiyası
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 # Modelin başladılması
 model = genai.GenerativeModel(
-    model_name='gemini-2.0-flash',
-system_instruction="Sənin adın 'Perfect AI'-dir. İstifadəçi ilə mehriban və köməkçi tonda danış.İstifadəçi hansı dildə danışsa o dildə cavab ver.Əgər istifadəçi səninlə ilk dəfə salamlaşırsa, sən də salam ver. Əks halda, birbaşa sualları cavablandır)
+    model_name='gemini-1.5-flash',
+    system_instruction="Sənin adın 'Perfect AI'-dir. İstifadəçi ilə mehriban və köməkçi tonda danış. Hər mesajda salam vermə, birbaşa sualları cavablandır."
+)
 
-# 3. Söhbət Tarixçəsini Göstər
+# Sohbet tarixçəsini göstər
 for message in st.session_state.chat_history:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 4. Giriş Hissəsi (Mətn və Şəkil)
-prompt = st.chat_input("Mesajınızı yazın...")
-uploaded_file = st.sidebar.file_uploader("Şəkil yüklə", type=["jpg", "jpeg", "png"])
-
-if prompt or uploaded_file:
-    # İstifadəçinin mesajını göstər
+# İstifadəçi girişi
+if prompt := st.chat_input("Mesajınızı yazın..."):
+    st.session_state.chat_history.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
-        if prompt: st.markdown(prompt)
-        if uploaded_file: st.image(uploaded_file, caption="Yüklənən şəkil")
+        st.markdown(prompt)
 
-    # AI Cavabı
     with st.chat_message("assistant"):
-        try:
-            # Şəkil varsa, həm şəkil həm mətni göndər
-            content = []
-            if prompt: content.append(prompt)
-            if uploaded_file:
-                img = Image.open(uploaded_file)
-                content.append(img)
-            
-            response = model.generate_content(content)
-            st.markdown(response.text)
-            
-            # Tarixçəyə əlavə et
-            st.session_state.chat_history.append({"role": "user", "content": prompt if prompt else "Şəkil göndərildi"})
-            st.session_state.chat_history.append({"role": "assistant", "content": response.text})
-            
-        except Exception as e:
-
-            st.error(f"Xəta: {e}")
-
-
+        chat = model.start_chat(history=[{"role": m["role"], "parts": [m["content"]]} for m in st.session_state.chat_history[:-1]])
+        response = chat.send_message(prompt)
+        st.markdown(response.text)
+        st.session_state.chat_history.append({"role": "assistant", "content": response.text})
