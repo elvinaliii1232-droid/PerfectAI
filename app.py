@@ -22,7 +22,7 @@ if "chat_history" not in st.session_state:
 
 # 3. Modelin Başladılması (Stabil versiya)
 model = genai.GenerativeModel(
-    model_name='gemini-1.5-flash',
+    model_name='gemini-2.0-flash',
     system_instruction="Sənin adın 'Perfect AI'-dir. Mehriban köməkçi ol. Birbaşa cavab ver."
 )
 
@@ -65,3 +65,4 @@ if prompt := st.chat_input("Mesajınızı yazın..."):
                 st.session_state.chat_history.append({"role": "assistant", "content": response.text})
             except Exception as e:
                 st.error(f"Xəta baş verdi: {e}")
+
